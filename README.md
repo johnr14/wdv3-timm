@@ -31,12 +31,12 @@ python -m pip install torch torchvision torchaudio --index-url https://download.
 python -m pip install -r requirements.txt
 ```
 
-3. Run the example script, picking one of the 3 models to use:
+3. Run the example script, picking one of the 3 models to use or all of them:
 ```sh
-python wdv3_timm.py <swinv2|convnext|vit> path/to/image.png
+python wdv3_timm.py --model=<swinv2|convnext|vit|all> path/to/image.png
 ```
 
-Example output from `python wdv3_timm.py vit a_picture_of_ganyu.png`:
+Example output from `python wdv3_timm.py --model=vit a_picture_of_ganyu.png`:
 ```sh
 Loading model 'vit' from 'SmilingWolf/wd-vit-tagger-v3'...
 Loading tag list...
@@ -81,4 +81,26 @@ General tags (threshold=0.35):
   shirt: 0.427
   black_shirt: 0.417
   cowbell: 0.415
+```
+
+4. Do more with batch mode !
+Files will be processed without unloading the model, saving lots of time.
+It's possible to have all model be used, by unloading and loading a new model after all the files where done with the previous model.
+
+```sh
+# with file list created from shell
+python wdv3_timm.py --model=all path/to/image_*.png
+# or with glob that are handled by python, put in quotes
+python wdv3_timm.py --model=all "path/*/image_*.png"
+
+```
+5. Save to JSON !
+Save output to JSON in the same path that the file is with the same filename but with a .json extension.
+`--json` will disable printing the results, if you want them back, use `--print`.
+
+```sh
+# will create a filepath/filename.json file
+python wdv3_timm.py --model=all path/to/image_*.png --json
+# or to also print the results
+python wdv3_timm.py --model=all path/to/image_*.png --json --print
 ```

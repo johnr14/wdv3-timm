@@ -1,5 +1,7 @@
 diffusers
+glob
 huggingface-hub
+json
 numpy
 pandas
 pillow >= 9.5.0

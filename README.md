@@ -83,20 +83,25 @@ General tags (threshold=0.35):
   cowbell: 0.415
 ```
 
-4. Do more with batch mode !
+## Do more with batch mode !
 Files will be processed without unloading the model, saving lots of time.
-It's possible to have all model be used, by unloading and loading a new model after all the files where done with the previous model.
+
+
+It's possible to have all model be used one after the other. It is done by unloading and loading a new model after all the files where done with the previous model.
 
 ```sh
+# with file list you provide
+python wdv3_timm.py --model=all path/to/image_1.png path/to/image_2.png path/to/image_3.png
 # with file list created from shell
 python wdv3_timm.py --model=all path/to/image_*.png
 # or with glob that are handled by python, put in quotes
 python wdv3_timm.py --model=all "path/*/image_*.png"
 
 ```
-5. Save to JSON !
+##  Save to JSON !
 Save output to JSON in the same path that the file is with the same filename but with a .json extension.
 `--json` will disable printing the results, if you want them back, use `--print`.
+If a JSON is already existant, it will append to it.
 
 ```sh
 # will create a filepath/filename.json file
@@ -104,3 +109,168 @@ python wdv3_timm.py --model=all path/to/image_*.png --json
 # or to also print the results
 python wdv3_timm.py --model=all path/to/image_*.png --json --print
 ```
+The JSON will look like :
+
+<details>
+  <summary>Click me to view JSON output for all 3 models !</summary>
+
+```JSON
+[
+    {
+        "Caption": "1girl, solo, horns, blue_hair, long_hair, detached_sleeves, ahoge, gloves, purple_eyes, bell, orb, breasts, looking_at_viewer, black_gloves, white_background, bare_shoulders, smile, medium_breasts, neck_bell, thighlet, sidelocks, vision_(genshin_impact), standing, white_sleeves, tassel, gold_trim, simple_background, bow, pantyhose, waist_cape, flower_knot, bodystocking, feet_out_of_frame, low_ponytail, chinese_knot, long_sleeves, ganyu_(genshin_impact)",
+        "Tags": "1girl, solo, horns, blue hair, long hair, detached sleeves, ahoge, gloves, purple eyes, bell, orb, breasts, looking at viewer, black gloves, white background, bare shoulders, smile, medium breasts, neck bell, thighlet, sidelocks, vision \\(genshin impact\\), standing, white sleeves, tassel, gold trim, simple background, bow, pantyhose, waist cape, flower knot, bodystocking, feet out of frame, low ponytail, chinese knot, long sleeves, ganyu \\(genshin impact\\)",
+        "Ratings": {
+            "general": "0.17550515",
+            "sensitive": "0.83533895",
+            "questionable": "0.0011807431",
+            "explicit": "0.00017911881"
+        },
+        "Character": {
+            "ganyu_(genshin_impact)": "0.9917346"
+        },
+        "General": {
+            "1girl": "0.99861884",
+            "solo": "0.9774026",
+            "horns": "0.9733339",
+            "blue_hair": "0.9678151",
+            "long_hair": "0.96172965",
+            "detached_sleeves": "0.9510404",
+            "ahoge": "0.94540447",
+            "gloves": "0.9342438",
+            "purple_eyes": "0.9304822",
+            "bell": "0.92110497",
+            "orb": "0.9137795",
+            "breasts": "0.9032445",
+            "looking_at_viewer": "0.90013504",
+            "black_gloves": "0.862591",
+            "white_background": "0.8615776",
+            "bare_shoulders": "0.8545493",
+            "smile": "0.82447666",
+            "medium_breasts": "0.8215981",
+            "neck_bell": "0.79515177",
+            "thighlet": "0.7304673",
+            "sidelocks": "0.7278657",
+            "vision_(genshin_impact)": "0.6980954",
+            "standing": "0.690362",
+            "white_sleeves": "0.6442809",
+            "tassel": "0.6387444",
+            "gold_trim": "0.612045",
+            "simple_background": "0.5703776",
+            "bow": "0.49510783",
+            "pantyhose": "0.46065962",
+            "waist_cape": "0.44340992",
+            "flower_knot": "0.4369225",
+            "bodystocking": "0.43336046",
+            "feet_out_of_frame": "0.42403945",
+            "low_ponytail": "0.40857768",
+            "chinese_knot": "0.4051522",
+            "long_sleeves": "0.36612618"
+        },
+        "Repo_id": "SmilingWolf/wd-vit-tagger-v3"
+    },
+    {
+        "Caption": "1girl, solo, horns, long_hair, blue_hair, detached_sleeves, gloves, ahoge, breasts, bell, looking_at_viewer, purple_eyes, orb, black_gloves, smile, bare_shoulders, medium_breasts, white_background, vision_(genshin_impact), neck_bell, gold_trim, white_sleeves, sidelocks, thighlet, standing, tassel, simple_background, pantyhose, bodystocking, low_ponytail, flower_knot, chinese_knot, long_sleeves, feet_out_of_frame, ganyu_(genshin_impact)",
+        "Tags": "1girl, solo, horns, long hair, blue hair, detached sleeves, gloves, ahoge, breasts, bell, looking at viewer, purple eyes, orb, black gloves, smile, bare shoulders, medium breasts, white background, vision \\(genshin impact\\), neck bell, gold trim, white sleeves, sidelocks, thighlet, standing, tassel, simple background, pantyhose, bodystocking, low ponytail, flower knot, chinese knot, long sleeves, feet out of frame, ganyu \\(genshin impact\\)",
+        "Ratings": {
+            "general": "0.09444821",
+            "sensitive": "0.9110725",
+            "questionable": "0.001273665",
+            "explicit": "0.00019249455"
+        },
+        "Character": {
+            "ganyu_(genshin_impact)": "0.989583"
+        },
+        "General": {
+            "1girl": "0.9990073",
+            "solo": "0.986086",
+            "horns": "0.97691685",
+            "long_hair": "0.976655",
+            "blue_hair": "0.97018594",
+            "detached_sleeves": "0.9630663",
+            "gloves": "0.9528584",
+            "ahoge": "0.9466164",
+            "breasts": "0.939335",
+            "bell": "0.9139086",
+            "looking_at_viewer": "0.90088356",
+            "purple_eyes": "0.9004356",
+            "orb": "0.89351803",
+            "black_gloves": "0.8897617",
+            "smile": "0.8828965",
+            "bare_shoulders": "0.87559116",
+            "medium_breasts": "0.8694743",
+            "white_background": "0.8646937",
+            "vision_(genshin_impact)": "0.7989824",
+            "neck_bell": "0.7968426",
+            "gold_trim": "0.77870077",
+            "white_sleeves": "0.74657595",
+            "sidelocks": "0.7191376",
+            "thighlet": "0.7173794",
+            "standing": "0.6971251",
+            "tassel": "0.6534954",
+            "simple_background": "0.6306383",
+            "pantyhose": "0.60918325",
+            "bodystocking": "0.5880574",
+            "low_ponytail": "0.58335847",
+            "flower_knot": "0.55061",
+            "chinese_knot": "0.4911994",
+            "long_sleeves": "0.40371013",
+            "feet_out_of_frame": "0.36766034"
+        },
+        "Repo_id": "SmilingWolf/wd-swinv2-tagger-v3"
+    },
+    {
+        "Caption": "1girl, solo, long_hair, ahoge, horns, blue_hair, orb, detached_sleeves, gloves, bell, purple_eyes, breasts, looking_at_viewer, bare_shoulders, white_background, black_gloves, medium_breasts, neck_bell, vision_(genshin_impact), tassel, smile, white_sleeves, gold_trim, sidelocks, simple_background, standing, thighlet, bodystocking, pantyhose, flower_knot, chinese_knot, low_ponytail, bow, waist_cape, feet_out_of_frame, ganyu_(genshin_impact)",
+        "Tags": "1girl, solo, long hair, ahoge, horns, blue hair, orb, detached sleeves, gloves, bell, purple eyes, breasts, looking at viewer, bare shoulders, white background, black gloves, medium breasts, neck bell, vision \\(genshin impact\\), tassel, smile, white sleeves, gold trim, sidelocks, simple background, standing, thighlet, bodystocking, pantyhose, flower knot, chinese knot, low ponytail, bow, waist cape, feet out of frame, ganyu \\(genshin impact\\)",
+        "Ratings": {
+            "general": "0.11932882",
+            "sensitive": "0.87867385",
+            "questionable": "0.0012409396",
+            "explicit": "0.00015736303"
+        },
+        "Character": {
+            "ganyu_(genshin_impact)": "0.9868869"
+        },
+        "General": {
+            "1girl": "0.99817467",
+            "solo": "0.99103117",
+            "long_hair": "0.9574774",
+            "ahoge": "0.957307",
+            "horns": "0.9566982",
+            "blue_hair": "0.953568",
+            "orb": "0.9492937",
+            "detached_sleeves": "0.94679636",
+            "gloves": "0.946109",
+            "bell": "0.93114275",
+            "purple_eyes": "0.9196103",
+            "breasts": "0.9013523",
+            "looking_at_viewer": "0.8901093",
+            "bare_shoulders": "0.8684672",
+            "white_background": "0.8641212",
+            "black_gloves": "0.8531206",
+            "medium_breasts": "0.8330931",
+            "neck_bell": "0.7989295",
+            "vision_(genshin_impact)": "0.793058",
+            "tassel": "0.78462917",
+            "smile": "0.77972054",
+            "white_sleeves": "0.72669303",
+            "gold_trim": "0.68204206",
+            "sidelocks": "0.6696157",
+            "simple_background": "0.64645475",
+            "standing": "0.6338763",
+            "thighlet": "0.6263255",
+            "bodystocking": "0.6048315",
+            "pantyhose": "0.53592044",
+            "flower_knot": "0.48086384",
+            "chinese_knot": "0.4745855",
+            "low_ponytail": "0.4641142",
+            "bow": "0.4116591",
+            "waist_cape": "0.38854668",
+            "feet_out_of_frame": "0.35137108"
+        },
+        "Repo_id": "SmilingWolf/wd-convnext-tagger-v3"
+    }
+]
+
+```
+
+</details>

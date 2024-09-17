@@ -293,7 +293,7 @@ python wdv3_timm.py --model=all path/to/image_*.png --json --summary
 The JSON summary will look like :
 
 <details>
-  <summary>Click me to view JSON output for all 3 models !</summary>
+  <summary>Click me to view JSON summary !</summary>
 
 
 ```JSON

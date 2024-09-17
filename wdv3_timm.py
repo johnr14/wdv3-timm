@@ -400,6 +400,8 @@ class ScriptOptions:
             # transform to list
             self.model = self.model.split(',')
             print(self.model)
+        else:
+            self.model = [self.model]
         for model in self.model:
             if model not in valid_models:
                 raise ValueError(f"Invalid model. Must be one of: {valid_models}")

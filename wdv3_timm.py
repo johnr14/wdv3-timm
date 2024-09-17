@@ -113,7 +113,65 @@ def get_tags(
 
     return caption, taglist, rating_labels, char_labels, gen_labels
 
-def write_to_json(image_path: Path, caption: str, taglist: List[str], ratings: Dict[str, float], character: Dict[str, float], general: Dict[str, float], repo_id: str) -> None:
+def extract_keys_for_summary(data, key_name: str):
+    """Extracts 'General' keys and 'Repo_id' from JSON data."""
+    extracted_keys = []
+    for item in data:
+        if key_name in item and 'Repo_id' in item:
+            repo_id = item['Repo_id']
+            for key, value in item[key_name].items():
+                extracted_keys.append((repo_id, key, value))
+    return extracted_keys
+
+
+def merge_and_order_keys(general_keys):
+    """Merges and orders 'General' keys while keeping duplicates."""
+    # Convert to list of tuples, then sort
+    sorted_keys = sorted(general_keys, key=lambda x: x[1])
+    return sorted_keys
+
+
+def remove_keys_with_pattern(general_keys, pattern):
+    """Removes key-value pairs where key name contains pattern."""
+    filtered_keys = [(repo_id, key, value) for repo_id, key, value in general_keys if pattern not in key]
+    return filtered_keys
+
+
+def get_highest_value_pairs(filtered_keys):
+    """Returns key-value pairs for each unique key with its highest value and corresponding Repo_id."""
+    highest_value_pairs = {}
+    for repo_id, key, value in filtered_keys:
+        try:
+            # Try converting value to float for comparison
+            float_value = float(value)
+            if key not in highest_value_pairs or float_value > float(highest_value_pairs[key][2]):
+                highest_value_pairs[key] = (repo_id, key, value)
+        except ValueError:
+            # Non-numeric value, keep it if it's the first occurrence
+            if key not in highest_value_pairs:
+                highest_value_pairs[key] = (repo_id, key, value)
+    return highest_value_pairs.values()
+
+
+def print_key_value_pairs(value_pairs, input_file):
+    if save_to_json:
+        output_file = f"{os.path.splitext(input_file)[0]}_tags.json"
+        dict_value_pairs = {}
+        for repo_id, key, value in value_pairs:
+            if repo_id not in dict_value_pairs:
+                dict_value_pairs[repo_id] = {}
+            dict_value_pairs[repo_id][key] = value
+        with open(output_file, 'w') as f:
+            json.dump(dict_value_pairs, f, indent=4)
+    else:
+        """Prints each key-value pair on a separate line, including Repo_id."""
+        print(f"{'Key':<40} {'Value':<20} {'Repo ID'}")
+        print("-" * 100)
+
+        for repo_id, key, value in value_pairs:
+            print(f"{key:<40} {value:<20} {repo_id}")
+
+def write_to_json(image_path: Path, caption: str, taglist: List[str], ratings: Dict[str, float], character: Dict[str, float], general: Dict[str, float], repo_id: str, summary: bool = False) -> None:
 
     # Create the full path for the json file
     json_file_path = get_json_filepath(image_path)
@@ -140,6 +198,111 @@ def write_to_json(image_path: Path, caption: str, taglist: List[str], ratings: D
 
         # Append the new data to the existing data
         existing_data.append(data)
+
+        if summary:
+            pattern = ':>='  # pattern to remove
+
+            general_keys = extract_keys_for_summary(existing_data, "General")
+            ratings_keys = extract_keys_for_summary(existing_data, "Ratings")
+            caracter_keys = extract_keys_for_summary(existing_data, "Character")
+
+            #filtered_general_keys = remove_keys_with_pattern(general_keys, pattern)
+
+            highest_general_keys = get_highest_value_pairs(remove_keys_with_pattern(general_keys, pattern))
+            highest_ratings_keys = get_highest_value_pairs(ratings_keys)
+            highest_caracter_keys = get_highest_value_pairs(caracter_keys)
+
+#             dict_value_pairs = {}
+#             dict_value_pairs["Summary"] = {}
+#             for repo_id, key, value in highest_value_pairs:
+#                 if repo_id not in dict_value_pairs["Summary"]:
+#                     dict_value_pairs["Summary"][repo_id] = {}
+#                 dict_value_pairs["Summary"][repo_id][key] = value
+#
+#             for repo_id, key, value in highest_ratings_keys:
+#                 if "Ratings" not in dict_value_pairs["Summary"][repo_id]:
+#                     dict_value_pairs["Summary"][repo_id]["Ratings"] = {}
+#                 dict_value_pairs["Summary"][repo_id]["Ratings"][key] = value
+#
+#             for repo_id, key, value in highest_caracter_keys:
+#                 if "Character" not in dict_value_pairs["Summary"][repo_id]:
+#                     dict_value_pairs["Summary"][repo_id] = {"Character": set()}
+#                 dict_value_pairs["Summary"][repo_id]["Character"][key] = value
+#
+#             for repo_id, key, value in highest_ratings_keys:
+#                 if "Caption" not in dict_value_pairs["Summary"]["Caption"]:
+#                     dict_value_pairs["Summary"]["Caption"] = {}
+#                 dict_value_pairs["Summary"][repo_id]["Character"].append(key)
+#
+#             for repo_id, key, value in highest_ratings_keys:
+#                 if "Tags" not in dict_value_pairs["Summary"]:
+#                     dict_value_pairs["Summary"]["Tags"] = {}
+#                 dict_value_pairs["Summary"][repo_id]["Character"][key] = value
+#
+            dict_value_pairs = {}
+            dict_value_pairs["Summary"] = {}
+
+            # Process highest value pairs
+            for repo_id, key, value in highest_general_keys:
+                if "General" not in dict_value_pairs["Summary"]:
+                    dict_value_pairs["Summary"]["General"] = {}
+                if "General_Models" not in dict_value_pairs["Summary"]:
+                    dict_value_pairs["Summary"]["General_Models"] = {}
+                if repo_id not in dict_value_pairs["Summary"]["General_Models"]:
+                    dict_value_pairs["Summary"]["General_Models"][repo_id] = []
+                # List of selected keys per repo_id
+                dict_value_pairs["Summary"]["General_Models"][repo_id].append(key)
+                # Best key and value selected
+                dict_value_pairs["Summary"]["General"][key] = value
+
+            # Process highest ratings keys
+            ratings_set = set()
+            for repo_id, key, value in highest_ratings_keys:
+                # ratings_set.add(key)
+                if "Ratings" not in dict_value_pairs["Summary"]:
+                    dict_value_pairs["Summary"]["Ratings"] = {}
+                dict_value_pairs["Summary"]["Ratings"][key] = value
+                if "Ratings_Models" not in dict_value_pairs["Summary"]:
+                    dict_value_pairs["Summary"]["Ratings_Models"] = {}
+                if repo_id not in dict_value_pairs["Summary"]["Ratings_Models"]:
+                    dict_value_pairs["Summary"]["Ratings_Models"][repo_id] = []
+                # List of selected keys per repo_id
+                dict_value_pairs["Summary"]["Ratings_Models"][repo_id].append(key)
+                # Best key and value selected
+                dict_value_pairs["Summary"]["Ratings"][key] = value
+
+            # Process highest character keys
+            for repo_id, key, value in highest_caracter_keys:
+                if "Character" not in dict_value_pairs["Summary"]:
+                    dict_value_pairs["Summary"]["Character"] = {}
+                if "Character_Models" not in dict_value_pairs["Summary"]:
+                    dict_value_pairs["Summary"]["Character_Models"] = {}
+                if repo_id not in dict_value_pairs["Summary"]["Character_Models"]:
+                    dict_value_pairs["Summary"]["Character_Models"][repo_id] = []
+                # List of selected keys per repo_id
+                dict_value_pairs["Summary"]["Character_Models"][repo_id].append(key)
+                # Best key and value selected
+                dict_value_pairs["Summary"]["Character"][key] = value
+
+            # Process caption
+            caption_set = set()
+            for repo_id, key, value in highest_general_keys:
+                caption_set.add(key.replace(" ", "_"))
+                if "Caption" not in dict_value_pairs["Summary"]:
+                    dict_value_pairs["Summary"]["Caption"] = []
+            dict_value_pairs["Summary"]["Caption"] = ", ".join(sorted(list(caption_set)))
+
+            # Process tag
+            caption_set = set()
+            for repo_id, key, value in highest_general_keys:
+                caption_set.add(key)
+                if "Tags" not in dict_value_pairs["Summary"]:
+                    dict_value_pairs["Summary"]["Tags"] = []
+            dict_value_pairs["Summary"]["Tags"] = ", ".join(sorted(list(caption_set)))
+
+            # Remove old summary
+
+            existing_data.append(dict_value_pairs)
 
         try:
             with open(json_file_path, 'w') as f:
@@ -208,8 +371,9 @@ class ScriptOptions:
     model: str = field(default="vit", metadata={"help": "Model to use. Options: "+str(list(MODEL_REPO_MAP.keys()) + ['all'])})
     gen_threshold: float = field(default=0.35)
     char_threshold: float = field(default=0.75)
-    json: bool = field(default=False)
-    print: bool = field(default=False)
+    json: bool = field(default=False, metadata={"help": "Will save results to a .json file where the image is and with the same name."})
+    print: bool = field(default=False, metadata={"help": "With --json, will print results or else they are muted."})
+    summary: bool = field(default=False, metadata={"help": "With --json and --model=all, generate a summary of all best tags ordered by float."})
 
     def __post_init__(self):
         expanded_files = []
@@ -306,13 +470,20 @@ def main(opts: ScriptOptions):
             image_nb +=1
 
             if opts.json:
-                write_to_json(image_path, caption, taglist, ratings, character, general, repo_id=repo_id)
+                if opts.summary and len(tagger_list) > 1 and model_number == len(tagger_list):
+                    summary=True
+                else:
+                    summary=False
+                write_to_json(image_path, caption, taglist, ratings, character, general, repo_id=repo_id, summary=summary)
                 print("Wrote to json file : "+ get_json_filepath(image_path))
 
             if not opts.json or opts.print:
                 print_results(image_path=image_path, caption=caption, taglist=taglist, ratings=ratings, character=character, general=general, repo_id=repo_id)
 
-        print("Done!")
+        # update model number after all images where processed
+        model_number += 1
+
+    print("Done!")
 
 
 if __name__ == "__main__":

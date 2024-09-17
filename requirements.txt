@@ -5,6 +5,7 @@ json
 numpy
 pandas
 pillow >= 9.5.0
+requests
 simple-parsing >= 0.1.5
 timm @ git+https://github.com/huggingface/pytorch-image-models@main#egg=timm
 tokenizers

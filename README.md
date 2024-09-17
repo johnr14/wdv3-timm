@@ -411,3 +411,13 @@ The JSON summary will look like :
         }
     }
 ```
+### JSON tag description
+If you want to have tag descriptions in your JSON to add context to a Large Language Model, you can now !
+But be warned, the descriptions have messy and not uniform format. Best would be to keep only first line.
+Also, will cache the tags to `danbooru_tags_desc.json` and will fetch any new tag from [Danbooru](https://danbooru.donmai.us).
+```sh
+# will add summary and tag descriptions
+python wdv3_timm.py --model=all path/to/image_*.png --json --summary --description
+# or just tag descriptions
+python wdv3_timm.py --model=all path/to/image_*.png --json --description
+```

@@ -199,6 +199,7 @@ def write_to_json(image_path: Path, caption: str, taglist: List[str], ratings: D
         # Append the new data to the existing data
         existing_data.append(data)
 
+        # summary will be True when it's time to write the last model's results to JSON
         if summary:
             pattern = ':>='  # pattern to remove
 
@@ -395,8 +396,16 @@ class ScriptOptions:
         self.image_file = expanded_files
 
         valid_models = list(MODEL_REPO_MAP.keys()) + ['all']
-        if self.model not in valid_models:
-            raise ValueError(f"Invalid model. Must be one of: {valid_models}")
+        if ',' in self.model:
+            # transform to list
+            self.model = self.model.split(',')
+            print(self.model)
+        for model in self.model:
+            if model not in valid_models:
+                raise ValueError(f"Invalid model. Must be one of: {valid_models}")
+
+        if 'all' in self.model:
+            self.model = list(MODEL_REPO_MAP.keys())
 
 
 def main(opts: ScriptOptions):
@@ -404,7 +413,11 @@ def main(opts: ScriptOptions):
         # Use all models, useful to compare model outputs
         tagger_list = list(MODEL_REPO_MAP.keys())
     else :
-        tagger_list = list(opt.model)
+        if not opts.model == type(list):
+            tagger_list = list(opts.model)
+        else:
+            # it's already a list of models
+            tagger_list = opts.model
 
     model_number = 1
     for tagger_model in tagger_list:
@@ -470,6 +483,7 @@ def main(opts: ScriptOptions):
             image_nb +=1
 
             if opts.json:
+                # Want summary, it's the last model and there is more than one model
                 if opts.summary and len(tagger_list) > 1 and model_number == len(tagger_list):
                     summary=True
                 else:

@@ -86,8 +86,8 @@ General tags (threshold=0.35):
 ## Do more with batch mode !
 Files will be processed without unloading the model, saving lots of time.
 
-
-It's possible to have all model be used one after the other. It is done by unloading and loading a new model after all the files where done with the previous model.
+It's possible to have multiple or all model be used one after the other.
+It is done by unloading and loading a new model after all the files where done with the previous model.
 
 ```sh
 # with file list you provide
@@ -96,6 +96,8 @@ python wdv3_timm.py --model=all path/to/image_1.png path/to/image_2.png path/to/
 python wdv3_timm.py --model=all path/to/image_*.png
 # or with glob that are handled by python, put in quotes
 python wdv3_timm.py --model=all "path/*/image_*.png"
+# only with selected models :
+python wdv3_timm.py --model=vit,convnext "path/*/image_*.png"
 
 ```
 ##  Save to JSON !
@@ -274,3 +276,138 @@ The JSON will look like :
 ```
 
 </details>
+
+
+### JSON summary
+Do you want to keep the highest tags from all different models ?
+Here you can, but it will ignore cutoff.
+Only works with `--json`
+
+Will also tell what models made the highest certainty for selected tags.
+For more control, you will have to write your own JSON parser.
+
+```sh
+# will create a filepath/filename.json file and summary
+python wdv3_timm.py --model=all path/to/image_*.png --json --summary
+```
+The JSON summary will look like :
+
+<details>
+  <summary>Click me to view JSON output for all 3 models !</summary>
+
+
+```JSON
+
+ {
+        "Summary": {
+            "General": {
+                "1girl": "0.9990073",
+                "solo": "0.99103117",
+                "horns": "0.97691685",
+                "blue_hair": "0.97018594",
+                "long_hair": "0.976655",
+                "detached_sleeves": "0.9630663",
+                "ahoge": "0.95730704",
+                "gloves": "0.95285827",
+                "purple_eyes": "0.9304822",
+                "bell": "0.9311429",
+                "orb": "0.94929373",
+                "breasts": "0.939335",
+                "looking_at_viewer": "0.90088356",
+                "black_gloves": "0.88976157",
+                "white_background": "0.8646937",
+                "bare_shoulders": "0.87559104",
+                "smile": "0.8828964",
+                "medium_breasts": "0.8694741",
+                "neck_bell": "0.79893",
+                "thighlet": "0.7304673",
+                "sidelocks": "0.7278657",
+                "vision_(genshin_impact)": "0.79898244",
+                "standing": "0.69712484",
+                "white_sleeves": "0.74657583",
+                "tassel": "0.7846296",
+                "gold_trim": "0.77870077",
+                "simple_background": "0.64645475",
+                "bow": "0.49510783",
+                "pantyhose": "0.60918343",
+                "waist_cape": "0.44340992",
+                "flower_knot": "0.55061",
+                "bodystocking": "0.6048321",
+                "feet_out_of_frame": "0.42403945",
+                "low_ponytail": "0.5833588",
+                "chinese_knot": "0.49119928",
+                "long_sleeves": "0.4037104"
+            },
+            "General_Models": {
+                "SmilingWolf/wd-swinv2-tagger-v3": [
+                    "1girl",
+                    "horns",
+                    "blue_hair",
+                    "long_hair",
+                    "detached_sleeves",
+                    "gloves",
+                    "breasts",
+                    "looking_at_viewer",
+                    "black_gloves",
+                    "white_background",
+                    "bare_shoulders",
+                    "smile",
+                    "medium_breasts",
+                    "vision_(genshin_impact)",
+                    "standing",
+                    "white_sleeves",
+                    "gold_trim",
+                    "pantyhose",
+                    "flower_knot",
+                    "low_ponytail",
+                    "chinese_knot",
+                    "long_sleeves"
+                ],
+                "SmilingWolf/wd-convnext-tagger-v3": [
+                    "solo",
+                    "ahoge",
+                    "bell",
+                    "orb",
+                    "neck_bell",
+                    "tassel",
+                    "simple_background",
+                    "bodystocking"
+                ],
+                "SmilingWolf/wd-vit-tagger-v3": [
+                    "purple_eyes",
+                    "thighlet",
+                    "sidelocks",
+                    "bow",
+                    "waist_cape",
+                    "feet_out_of_frame"
+                ]
+            },
+            "Ratings": {
+                "general": "0.17550515",
+                "sensitive": "0.9110725",
+                "questionable": "0.0012736674",
+                "explicit": "0.00019249438"
+            },
+            "Ratings_Models": {
+                "SmilingWolf/wd-vit-tagger-v3": [
+                    "general"
+                ],
+                "SmilingWolf/wd-swinv2-tagger-v3": [
+                    "sensitive",
+                    "questionable",
+                    "explicit"
+                ]
+            },
+            "Character": {
+                "ganyu_(genshin_impact)": "0.9917346"
+            },
+            "Character_Models": {
+                "SmilingWolf/wd-vit-tagger-v3": [
+                    "ganyu_(genshin_impact)"
+                ]
+            },
+            "Caption": "1girl, ahoge, bare_shoulders, bell, black_gloves, blue_hair, bodystocking, bow, breasts, chinese_knot, detached_sleeves, feet_out_of_frame, flower_knot, gloves, gold_trim, horns, long_hair, long_sleeves, looking_at_viewer, low_ponytail, medium_breasts, neck_bell, orb, pantyhose, purple_eyes, sidelocks, simple_background, smile, solo, standing, tassel, thighlet, vision_(genshin_impact), waist_cape, white_background, white_sleeves",
+            "Tags": "1girl, ahoge, bare_shoulders, bell, black_gloves, blue_hair, bodystocking, bow, breasts, chinese_knot, detached_sleeves, feet_out_of_frame, flower_knot, gloves, gold_trim, horns, long_hair, long_sleeves, looking_at_viewer, low_ponytail, medium_breasts, neck_bell, orb, pantyhose, purple_eyes, sidelocks, simple_background, smile, solo, standing, tassel, thighlet, vision_(genshin_impact), waist_cape, white_background, white_sleeves"
+        }
+    }
+```

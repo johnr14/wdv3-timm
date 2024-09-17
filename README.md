@@ -411,6 +411,8 @@ The JSON summary will look like :
         }
     }
 ```
+</details>
+
 ### JSON tag description
 If you want to have tag descriptions in your JSON to add context to a Large Language Model, you can now !
 But be warned, the descriptions have messy and not uniform format. Best would be to keep only first line.
